@@ -10,7 +10,7 @@ class Connector {
         final int    PORT     = 3306;
         final String DATABASE = "examproject";
         final String USERNAME = "root";
-        final String PASSWORD = "****";
+        final String PASSWORD = "Ppppaddy1";
         String cp = "utf8";
         final String DELIMITER = ";;";
 
@@ -20,9 +20,7 @@ class Connector {
 
         Connector(){
             try{
-                //Class.forName("java.sql.DriverManager");
                 connection = DriverManager.getConnection(url, USERNAME, PASSWORD);
-                //Statement stmt = connection.createStatement();
             } catch (SQLException e){
                 e.printStackTrace();
             }
