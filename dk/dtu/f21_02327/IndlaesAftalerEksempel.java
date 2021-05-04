@@ -29,7 +29,7 @@ public class IndlaesAftalerEksempel {
 			for(VaccinationsAftale aftale : aftaler) {
 				try {
 					ip++;
-					/*java.util.Date utilDate = new java.util.Date();
+					java.util.Date utilDate = new java.util.Date();
 					System.out.println("java.util.Date : " + utilDate);
 
 					java.sql.Date sqlDate = new java.sql.Date(aftale.getAftaltTidspunkt().getTime());
@@ -39,9 +39,10 @@ public class IndlaesAftalerEksempel {
 					System.out.println("java.sql.sqlTime  : " + sqlTime);
 
 					java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(aftale.getAftaltTidspunkt().getTime());
-					System.out.println("java.sql.sqlTime  : " + sqlTimestamp);*/
+					System.out.println("java.sql.sqlTime  : " + sqlTimestamp);
 
-					String strUpdate = "INSERT INTO examproject.referral "+"VALUES(" + aftale.getCprnr() + ", '" + aftale.getNavn() + "', " + /*aftale.getAftaltTidspunkt().getTime()*/ip + ", '"+ /*sqlTimestamp.toString() +", " + /*aftale.getAftaltTidspunkt().getHours()sqlTime + ", " + */ aftale.getVaccineType() + "', '" + aftale.getLokation() + "')";
+					//String strUpdate = "INSERT INTO examproject.referral "+"VALUES(" + aftale.getCprnr() + ", '" + aftale.getNavn() + "', " + /*aftale.getAftaltTidspunkt().getTime()*/ip + ", '"+ /*sqlTimestamp.toString() +", " + /*aftale.getAftaltTidspunkt().getHours()sqlTime + ", " + */ aftale.getVaccineType() + "', '" + aftale.getLokation() + "')";
+					String strUpdate = "INSERT INTO examproject.referral "+"VALUES(" + aftale.getCprnr() + ", '" + aftale.getNavn() + "', '" + sqlDate + "', '"+ sqlTime+"', '" + aftale.getVaccineType() + "', '" + aftale.getLokation() + "')";
 					System.out.println("The SQL statement is: " + strUpdate + "\n"); // Echo For debugging
 					stmt.executeUpdate(strUpdate);
 				} catch (SQLIntegrityConstraintViolationException e){
@@ -53,11 +54,11 @@ public class IndlaesAftalerEksempel {
 			while(rset.next()) {   // Repeatedly process each row
 				long CPR = rset.getLong("CPR");
 				String ClientName = rset.getString("ClientName");
-				long RefDate = rset.getLong("RefDate"); // retrieve a 'double'-cell in the row
-				//int RefTime = rset.getInt("RefTime");
+				java.sql.Date RefDate = rset.getDate("RefDate"); // retrieve a 'double'-cell in the row
+				java.sql.Time RefTime = rset.getTime("RefTime");
 				String VacType = rset.getString("VacType");
 				String Address = rset.getString("Address");
-				System.out.println(CPR + ", " + ClientName + ", " + RefDate + ", " + /*RefTime +*/ ", " + VacType + ", " + Address);
+				System.out.println(CPR + ", " + ClientName + ", " + RefDate + ", " + RefTime + ", " + VacType + ", " + Address);
 				++rowCount;
 			}
 			System.out.println("Total number of records = " + rowCount + " after");
