@@ -10,7 +10,7 @@ class Connector {
         final int    PORT     = 3306;
         final String DATABASE = "examproject";
         final String USERNAME = "root";
-        final String PASSWORD = "Ppppaddy1";
+        final String PASSWORD = "****";
         String cp = "utf8";
         final String DELIMITER = ";;";
 

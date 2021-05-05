@@ -3,7 +3,6 @@ package dk.dtu.f21_02327;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.Date;
 import java.util.List;
 
 public class IndlaesAftalerEksempel {
@@ -14,57 +13,67 @@ public class IndlaesAftalerEksempel {
 
 			Connector connector = new Connector();
 			Statement stmt = connector.connection.createStatement();
-			String strSelect = "SELECT * FROM examproject.referral;";
-			System.out.println("The SQL statement is: " + strSelect + "\n"); // Echo For debugging
-
 			int ip = 0;
+
+			// hurtig select af database til at tælle hvor mange personer der er i clientid
+			/*String strSelect = "SELECT * FROM examproject.clientId;";
+			System.out.println("The SQL statement is: " + strSelect + "\n"); // Echo For debugging
 			int rowCount = 0;
 			ResultSet rset = stmt.executeQuery(strSelect);
 			while(rset.next()) {   // Repeatedly process each row
 				++rowCount;
 			}
-			System.out.println("Total number of records = " + rowCount + " before");
+			System.out.println("Total number of records = " + rowCount + " before");*/
 
 			List<VaccinationsAftale> aftaler = laeser.indlaesAftaler("dk/dtu/f21_02327/vaccinationsaftaler.csv");
 			for(VaccinationsAftale aftale : aftaler) {
+				// resetter tæller her fordi at nuværende database kun har 17 medarbejdere.
+				if(ip==17) ip= 0;
+				ip++;
+
+				java.sql.Date sqlDate = new java.sql.Date(aftale.getAftaltTidspunkt().getTime());
+				System.out.println("java.sql.Date  : " + sqlDate);
+
+				java.sql.Time sqlTime = new java.sql.Time(aftale.getAftaltTidspunkt().getTime());
+				System.out.println("java.sql.sqlTime  : " + sqlTime);
+
 				try {
-					ip++;
-					java.util.Date utilDate = new java.util.Date();
-					System.out.println("java.util.Date : " + utilDate);
-
-					java.sql.Date sqlDate = new java.sql.Date(aftale.getAftaltTidspunkt().getTime());
-					System.out.println("java.sql.Date  : " + sqlDate);
-
-					java.sql.Time sqlTime = new java.sql.Time(aftale.getAftaltTidspunkt().getTime());
-					System.out.println("java.sql.sqlTime  : " + sqlTime);
-
-					java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(aftale.getAftaltTidspunkt().getTime());
-					System.out.println("java.sql.sqlTime  : " + sqlTimestamp);
-
-					//String strUpdate = "INSERT INTO examproject.referral "+"VALUES(" + aftale.getCprnr() + ", '" + aftale.getNavn() + "', " + /*aftale.getAftaltTidspunkt().getTime()*/ip + ", '"+ /*sqlTimestamp.toString() +", " + /*aftale.getAftaltTidspunkt().getHours()sqlTime + ", " + */ aftale.getVaccineType() + "', '" + aftale.getLokation() + "')";
-					String strUpdate = "INSERT INTO examproject.referral "+"VALUES(" + aftale.getCprnr() + ", '" + aftale.getNavn() + "', '" + sqlDate + "', '"+ sqlTime+"', '" + aftale.getVaccineType() + "', '" + aftale.getLokation() + "')";
-					System.out.println("The SQL statement is: " + strUpdate + "\n"); // Echo For debugging
-					stmt.executeUpdate(strUpdate);
-				} catch (SQLIntegrityConstraintViolationException e){
-					System.out.println("This person already exists");
+					String strUpdate = "INSERT INTO examproject.ClientId " + "VALUES(" + aftale.getCprnr() + ", '" + aftale.getNavn() + "')";
+					System.out.println("The SQL statement is: " + strUpdate); // Echo For debugging
+					stmt.executeUpdate(strUpdate); }
+				catch (SQLIntegrityConstraintViolationException error){
+					System.out.println("This is a duplicate \n");
+					}
+				try {
+					String strUpdate2 = "INSERT INTO examproject.Injection " + "VALUES('" + aftale.getVaccineType() + "', " + aftale.getCprnr() + ", " + ip + ", '" + sqlDate + "', '" + sqlTime + "')";
+					System.out.println("The SQL statement is: " + strUpdate2); // Echo For debugging
+					stmt.executeUpdate(strUpdate2);
+				} catch(SQLIntegrityConstraintViolationException e){
+					System.out.println("This is a duplicate \n");
+				} try{
+					String strUpdate3 = "INSERT INTO examproject.Location " + "VALUE('" + aftale.getLokation() + "', " + null + ")";
+					System.out.println("The SQL statement is: " + strUpdate3); // Echo For debugging
+					stmt.executeUpdate(strUpdate3);
+				} catch(SQLIntegrityConstraintViolationException e){
+					System.out.println("This is a duplicate \n");
 				}
+
+
 			}
-			rowCount = 0;
+			// Select statement der kan bruges til at hurtigt vise funktionalitet af programmet
+			/*rowCount = 0;
 			rset = stmt.executeQuery(strSelect);
 			while(rset.next()) {   // Repeatedly process each row
 				long CPR = rset.getLong("CPR");
 				String ClientName = rset.getString("ClientName");
-				java.sql.Date RefDate = rset.getDate("RefDate"); // retrieve a 'double'-cell in the row
-				java.sql.Time RefTime = rset.getTime("RefTime");
-				String VacType = rset.getString("VacType");
-				String Address = rset.getString("Address");
-				System.out.println(CPR + ", " + ClientName + ", " + RefDate + ", " + RefTime + ", " + VacType + ", " + Address);
+				System.out.println(CPR + ", " + ClientName );
 				++rowCount;
 			}
-			System.out.println("Total number of records = " + rowCount + " after");
+			System.out.println("Total number of records = " + rowCount + " after");*/
 
 		} catch (IOException | SQLException e) {
 			e.printStackTrace();
 		}
 	}
+
 }
