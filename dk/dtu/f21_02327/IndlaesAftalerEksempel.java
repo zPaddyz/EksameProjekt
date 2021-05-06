@@ -13,22 +13,25 @@ public class IndlaesAftalerEksempel {
 
 			Connector connector = new Connector();
 			Statement stmt = connector.connection.createStatement();
+
+
 			int ip = 0;
 
 			// hurtig select af database til at tælle hvor mange personer der er i clientid
-			/*String strSelect = "SELECT * FROM examproject.clientId;";
+			String strSelect = "SELECT * FROM examproject.clientId;";
 			System.out.println("The SQL statement is: " + strSelect + "\n"); // Echo For debugging
 			int rowCount = 0;
 			ResultSet rset = stmt.executeQuery(strSelect);
 			while(rset.next()) {   // Repeatedly process each row
 				++rowCount;
 			}
-			System.out.println("Total number of records = " + rowCount + " before");*/
+			System.out.println("Total number of records = " + rowCount + " before");
 
 			List<VaccinationsAftale> aftaler = laeser.indlaesAftaler("dk/dtu/f21_02327/vaccinationsaftaler.csv");
 			for(VaccinationsAftale aftale : aftaler) {
 				// resetter tæller her fordi at nuværende database kun har 17 medarbejdere.
 				if(ip==17) ip= 0;
+				// bruger ip da databasen i dens nuværende form ikke understøtte at matche forskellige ansatte til de rigtige personer og lokationer.
 				ip++;
 
 				java.sql.Date sqlDate = new java.sql.Date(aftale.getAftaltTidspunkt().getTime());
@@ -45,7 +48,8 @@ public class IndlaesAftalerEksempel {
 					System.out.println("This is a duplicate \n");
 					}
 				try {
-					String strUpdate2 = "INSERT INTO examproject.Injection " + "VALUES('" + aftale.getVaccineType() + "', " + aftale.getCprnr() + ", " + ip + ", '" + sqlDate + "', '" + sqlTime + "')";
+					String strUpdate2 = "INSERT INTO examproject.Injection " + "VALUES('" + aftale.getVaccineType() + "', " + aftale.getCprnr() +
+							", " + ip + ", '" + sqlDate + "', '" + sqlTime + "')";
 					System.out.println("The SQL statement is: " + strUpdate2); // Echo For debugging
 					stmt.executeUpdate(strUpdate2);
 				} catch(SQLIntegrityConstraintViolationException e){
@@ -61,7 +65,7 @@ public class IndlaesAftalerEksempel {
 
 			}
 			// Select statement der kan bruges til at hurtigt vise funktionalitet af programmet
-			/*rowCount = 0;
+			rowCount = 0;
 			rset = stmt.executeQuery(strSelect);
 			while(rset.next()) {   // Repeatedly process each row
 				long CPR = rset.getLong("CPR");
@@ -69,7 +73,7 @@ public class IndlaesAftalerEksempel {
 				System.out.println(CPR + ", " + ClientName );
 				++rowCount;
 			}
-			System.out.println("Total number of records = " + rowCount + " after");*/
+			System.out.println("Total number of records = " + rowCount + " after");
 
 		} catch (IOException | SQLException e) {
 			e.printStackTrace();
